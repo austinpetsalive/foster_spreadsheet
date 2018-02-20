@@ -1,5 +1,8 @@
 from typing import (Dict, List, Tuple, Optional, Any)
 import datetime
+import json
+import os
+import base64
 
 import requests
 from bs4 import BeautifulSoup
@@ -47,6 +50,11 @@ def fix_formulas(ws):
         for i in range(3, rows)
     ]
     ws.update_cells('F3:F', values)
+    values = [
+        [f'=IF(L{i}, DAYS360(L{i}, TODAY()), "--")']
+        for i in range(3, rows)
+    ]
+    ws.update_cells('AB3:AB', values)
 
 
 class Foster(object):
@@ -135,32 +143,82 @@ class Foster(object):
 
     def append_dog(self, apa_id: str) -> None:
         ws = self.sheet.worksheet_by_title('Tracking')
-        info = self.info(apa_id)
         ids = ws.get_col(2)
+        # row values empty
+        values = ['']*32
         if apa_id in ids:
-            raise ExistingDogException(apa_id)
-        ws.insert_rows(
-            len(ids),
-            values=[[
-                info['Name'],
-                apa_id,
-                info['BC/MC'],
-                info['Breed'],
-                info['DOB'],
-                '=IF(trim(E)="","--",(TODAY()-E)/7)',
-                info['Adoption Fee'],
-                info['Sex'],
-                info['Spay / Neuter'],
-                '', '', '', '',
-                info['Foster Full Name'],
-                info['Email'],
-                '',
-                info['Cell Phone'],
-                '', '', '', '', '', '',
-                info['Status'],
-                '', '', '', '', '', '', '',
-                info['dog_internal_id'],
-                info['person_internal_id']
-            ]]
-        )
+            print(f'Updating dog {apa_id}')
+            row_number = ids.index(apa_id) + 1
+            values = ws.get_row(row_number)
+            values = values + (['']*32)[:32 - len(values)]
+            ws.delete_rows(row_number)
+            del ids[row_number - 1]
+        else:
+            print(f'Creating new row for {apa_id}')
+        try:
+            info = self.info(apa_id)
+            # insert row values too
+            ws.insert_rows(
+                len(ids),
+                values=[[
+                    info['Name'],
+                    apa_id,
+                    info['BC/MC'],
+                    info['Breed'],
+                    info['DOB'],
+                    '=IF(trim(E)="","--",(TODAY()-E)/7)',
+                    info['Adoption Fee'],
+                    info['Sex'],
+                    info['Spay / Neuter'],
+                    values[9], values[10], values[11], values[12],
+                    info['Foster Full Name'],
+                    info['Email'],
+                    values[15],
+                    info['Cell Phone'],
+                    values[17], values[18], values[19], values[20], values[21], values[22],
+                    info['Status'],
+                    values[24], values[25], values[26], values[27], values[28], values[29], values[30],
+                    info['dog_internal_id'],
+                    info['person_internal_id']
+                ]]
+            )
+        except Exception as exc:
+            ws.insert_rows(
+                len(ids),
+                values=[[
+                    f'Error (most likely {apa_id} was not found)',
+                    apa_id
+                ]]
+            )
         fix_formulas(ws)
+
+
+def get_service_file(b64_string: str) -> None:
+    if os.path.exists('secret.json'):
+        return
+    b = base64.b64decode(b64_string)
+    s = b.decode('ascii')
+    with open('secret.json', 'w') as f:
+        f.write(s)
+
+def handle(req: str):
+    # check X-.. header here
+    print('----->')
+    import pprint
+    pprint.pprint(os.environ)
+    r = json.loads(req)
+    dog = r['apa_id']
+    api_key = os.environ['API_KEY']
+    sl_username = os.environ['SL_USERNAME']
+    sl_password = os.environ['SL_PASSWORD']
+    sheet_key = os.environ['SHEET_KEY']
+    get_service_file(os.environ['SERVICE_FILE_B64'])
+    print(api_key, sl_username, sl_password, sheet_key)
+    with open('secret.json') as f:
+        print(f.read())
+    f = Foster(
+        api_key, sl_username, sl_password, sheet_key, 'secret.json')
+    f.login()
+    f.open_sheet()
+    f.append_dog(dog)
+    return
