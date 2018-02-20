@@ -10,9 +10,9 @@ name = "pypi"
 jupyter = "*"
 requests = "*"
 mypy = "*"
-"bs4" = "*"
 pygsheets = "*"
 phonenumbers = "*"
+"beautifulsoup4" = "*"
 
 
 [dev-packages]
