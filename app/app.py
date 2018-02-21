@@ -40,8 +40,11 @@ def get_fee(dog: Dict[str, Any]) -> str:
     return dog['AdoptionFeeGroup']['Price']
 
 def get_phone(person: Dict[str, Any]) -> str:
-    ph = phonenumbers.parse(person['Phone'])
-    return phonenumbers.format_number(ph, phonenumbers.PhoneNumberFormat.NATIONAL)
+    try:
+        ph = phonenumbers.parse(person['Phone'])
+        return phonenumbers.format_number(ph, phonenumbers.PhoneNumberFormat.NATIONAL)
+    except phonenumbers.NumberParseException:
+        return ''
 
 def fix_formulas(ws):
     rows = ws.jsonSheet['properties']['gridProperties']['rowCount']
