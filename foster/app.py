@@ -181,7 +181,7 @@ class Foster(object):
         print('Updating spreadsheet')
         ws.update_cells('A3', values=new_values)
         fix_formulas(ws)
-        timestamp = datetime.datetime.now().strftime('%m/%d/%Y %I:%M% %p')
+        timestamp = datetime.datetime.now().strftime('%m/%d/%Y %I:%M %p')
         ws.update_cell(
             'A1',
             f'Last Full Update: {timestamp}'
