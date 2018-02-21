@@ -55,48 +55,29 @@ def fix_formulas(ws):
     ]
     ws.update_cells('F3:F', values)
     values = [
-        [f'=IF(L{i}, DAYS360(L{i}, TODAY()), "--")']
+        [f'=IF(K{i}, DAYS360(K{i}, TODAY()), "--")']
         for i in range(3, rows)
     ]
     ws.update_cells('AB3:AB', values)
 
 def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
             apa_id: str, dog_internal_id: str, person_internal_id: str) -> List:
-    return [
-        dog['Name'],
-        apa_id,
-        get_bc_mc(dog),
-        dog['Breed'],
-        get_dob(dog),
-        '',
-        get_fee(dog),
-        dog['Sex'],
-        dog['Altered'],
-        old_row[9],
-        old_row[10],
-        old_row[11],
-        old_row[12],
-        ' '.join([person['Firstname'], person['Lastname']]),
-        person['Email'],
-        old_row[15],
-        get_phone(person),
-        old_row[17],
-        old_row[18],
-        old_row[19],
-        old_row[20],
-        old_row[21],
-        old_row[22],
-        dog['Status'],
-        old_row[24],
-        old_row[25],
-        old_row[26],
-        old_row[27],
-        old_row[28],
-        old_row[29],
-        old_row[30],
-        dog_internal_id,
-        person_internal_id
-    ]
+    old_row[0] = dog['Name']
+    old_row[1] = apa_id
+    old_row[2] = get_bc_mc(dog)
+    old_row[3] = dog['Breed']
+    old_row[4] = get_dob(dog)
+    old_row[6] = dog['Sex']
+    old_row[7] = dog['Altered']
+    old_row[12] = ' '.join([person['Firstname'], person['Lastname']])
+    old_row[13] = person['Email']
+    old_row[15] = get_phone(person)
+    old_row[22] = dog['Status']
+    old_row[23] = get_fee(dog)
+    old_row[31] = dog_internal_id
+    old_row[32] = person_internal_id
+    return old_row
+
 
 class Foster(object):
 
