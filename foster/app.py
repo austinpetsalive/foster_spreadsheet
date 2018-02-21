@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import base64
+import functools
 
 import requests
 from bs4 import BeautifulSoup
@@ -204,16 +205,15 @@ class Foster(object):
             row_number = ids.index(apa_id) + 1
             values = ws.get_row(row_number)
             values = values + (['']*32)[:32 - len(values)]
-            ws.delete_rows(row_number)
-            del ids[row_number - 1]
+            fun = functools.partial(ws.update_row, row_number)
         else:
             print(f'Creating new row for {apa_id}')
+            fun = functools.partial(ws.insert_rows, len(ids))
         try:
             dog_internal_id, person_internal_id = self.get_internal_ids(apa_id)
             dog = self.dog_info(dog_internal_id)
             person = self.person_info(person_internal_id)
-            ws.insert_rows(
-                len(ids),
+            fun(
                 values=[new_row(values, dog, person, apa_id, dog_internal_id, person_internal_id)]
             )
         except Exception as exc:
