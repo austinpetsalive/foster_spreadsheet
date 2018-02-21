@@ -236,23 +236,19 @@ def get_service_file(b64_string: str) -> None:
         f.write(s)
 
 def handle(req: str):
-    # check X-.. header here
-    print('----->')
-    import pprint
-    pprint.pprint(os.environ)
-    r = json.loads(req)
-    dog = r['apa_id']
     api_key = os.environ['API_KEY']
     sl_username = os.environ['SL_USERNAME']
     sl_password = os.environ['SL_PASSWORD']
     sheet_key = os.environ['SHEET_KEY']
     get_service_file(os.environ['SERVICE_FILE_B64'])
-    print(api_key, sl_username, sl_password, sheet_key)
-    with open('secret.json') as f:
-        print(f.read())
     f = Foster(
         api_key, sl_username, sl_password, sheet_key, 'secret.json')
     f.login()
     f.open_sheet()
-    f.append_dog(dog)
-    return
+
+    r = json.loads(req)
+    if r.get('refresh'):
+        f.refresh_all()
+    else:
+        dog = r['apa_id']
+        f.append_dog(dog)
