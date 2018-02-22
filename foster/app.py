@@ -5,6 +5,7 @@ import os
 import base64
 import functools
 import traceback
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,6 +14,8 @@ import phonenumbers
 import pytz
 
 import shelterluv
+
+NUMBER_OF_COLUMNS = 35
 
 class ExistingDogException(Exception):
     pass
@@ -62,6 +65,27 @@ def fix_formulas(ws):
     ]
     ws.update_cells('AB3:AB', values)
 
+def get_scores(dog: Dict[str, Any]) -> str:
+    def _():
+        for attr in dog['Attributes']:
+            name = attr['AttributeName']
+            score = re.search('SCORE - (\w+) \((\d) out of 5\)', name)
+            energy = re.search('ENERGY - (\w+)', name)
+            if score is not None:
+                yield score.groups()
+            elif energy is not None:
+                yield 'Energy', energy.group(1)
+    return '\n'.join(f'{a}: {b}' for a, b in _())
+
+def get_attributes(dog: Dict[str, Any]) -> str:
+    def _():
+        for attr in dog['Attributes']:
+            name = attr['AttributeName']
+            if name.startswith('SCORE') or name.startswith('ENERGY'):
+                continue
+            yield name
+    return '\n'.join(_())
+
 def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
             apa_id: str, dog_internal_id: str, person_internal_id: str) -> List:
     old_row[0] = dog['Name']
@@ -76,8 +100,10 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[15] = get_phone(person)
     old_row[22] = dog['Status']
     old_row[23] = get_fee(dog)
-    old_row[31] = dog_internal_id
-    old_row[32] = person_internal_id
+    old_row[31] = get_scores(dog)
+    old_row[32] = get_attributes(dog)
+    old_row[33] = dog_internal_id
+    old_row[34] = person_internal_id
     return old_row
 
 
@@ -153,8 +179,8 @@ class Foster(object):
             if not apa_id:
                 break
             print(f'Processing {apa_id}')
-            dog_internal_id = row[31]
-            person_internal_id = row[32]
+            dog_internal_id = row[-2]
+            person_internal_id = row[-1]
             if not (dog_internal_id and person_internal_id):
                 print('.. missing some ids, will get them')
                 dog_internal_id, person_internal_id = self.get_internal_ids(apa_id)
@@ -175,12 +201,12 @@ class Foster(object):
     def append_dog(self, apa_id: str) -> None:
         ws = self.sheet.worksheet_by_title('Tracking')
         ids = ws.get_col(2)
-        values = ['']*33
+        values = ['']*NUMBER_OF_COLUMNS
         if apa_id in ids:
             print(f'Updating dog {apa_id}')
             row_number = ids.index(apa_id) + 1
             values = ws.get_row(row_number)
-            values = values + (['']*32)[:32 - len(values)]
+            values = values + (['']*NUMBER_OF_COLUMNS)[:NUMBER_OF_COLUMNS - len(values)]
             fun = functools.partial(ws.update_row, row_number)
         else:
             print(f'Creating new row for {apa_id}')
