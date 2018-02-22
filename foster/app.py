@@ -171,14 +171,6 @@ class Foster(object):
             'A1',
             f'Last Full Update: {timestamp}'
         )
-        # get all values
-        # if value has both internals
-        #    self.dog_info, self.person_info
-        # else
-        #    self.info(apa_id)
-        # update row
-        # update_values
-        # update timestamp
 
     def append_dog(self, apa_id: str) -> None:
         ws = self.sheet.worksheet_by_title('Tracking')
