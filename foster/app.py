@@ -4,6 +4,7 @@ import json
 import os
 import base64
 import functools
+import traceback
 
 import requests
 from bs4 import BeautifulSoup
@@ -200,6 +201,7 @@ class Foster(object):
                 values=[new_row(values, dog, person, apa_id, dog_internal_id, person_internal_id)]
             )
         except Exception as exc:
+            traceback.print_exc()
             ws.insert_rows(
                 len(ids),
                 values=[[
