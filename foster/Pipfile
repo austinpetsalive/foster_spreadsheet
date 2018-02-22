@@ -13,6 +13,7 @@ mypy = "*"
 pygsheets = "*"
 phonenumbers = "*"
 "beautifulsoup4" = "*"
+pytz = "*"
 
 
 [dev-packages]
