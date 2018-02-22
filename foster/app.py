@@ -183,7 +183,7 @@ class Foster(object):
     def append_dog(self, apa_id: str) -> None:
         ws = self.sheet.worksheet_by_title('Tracking')
         ids = ws.get_col(2)
-        values = ['']*32
+        values = ['']*33
         if apa_id in ids:
             print(f'Updating dog {apa_id}')
             row_number = ids.index(apa_id) + 1
