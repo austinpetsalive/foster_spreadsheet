@@ -1,4 +1,4 @@
-from typing import (Dict, List, Tuple, Optional, Any)
+from typing import (Dict, List, Tuple, Optional, Any, Iterable)
 import datetime
 import json
 import os
@@ -106,6 +106,14 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[34] = person_internal_id
     return old_row
 
+def apa_number_normalize(num: str) -> str:
+    m = re.match('APA-A-(\d+)', num)
+    if m:
+        return m.group(1)
+    return num
+
+def process_ids(line: str) -> Iterable[str]:
+    return [apa_number_normalize(x) for x in re.split('[ ,]', line) if x]
 
 class Foster(object):
 
@@ -198,7 +206,7 @@ class Foster(object):
             f'Last Full Update: {timestamp}'
         )
 
-    def append_dog(self, apa_id: str) -> None:
+    def _append_dog(self, apa_id: str) -> None:
         ws = self.sheet.worksheet_by_title('Tracking')
         ids = ws.get_col(2)
         values = ['']*NUMBER_OF_COLUMNS
@@ -228,6 +236,11 @@ class Foster(object):
                 ]]
             )
         fix_formulas(ws)
+
+    def append_dog(self, apa_ids: str) -> None:
+        for apa_id in process_ids(apa_ids):
+            print(f'-- Processing dog {apa_id}')
+            self._append_dog(apa_id)
 
 
 def get_service_file(b64_string: str) -> None:
