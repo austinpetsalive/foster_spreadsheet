@@ -1,4 +1,4 @@
-from typing import (Dict, List, Tuple, Optional, Any, Iterable)
+from typing import (Dict, List, Tuple, Optional, Any, Iterable, Iterator)
 import datetime
 import json
 import os
@@ -19,6 +19,15 @@ NUMBER_OF_COLUMNS = 35
 
 class ExistingDogException(Exception):
     pass
+
+class NotLitterFound(Exception):
+    pass
+
+def get_litter_id(page: BeautifulSoup) -> str:
+    icon = page.select_one('.litter-icon')
+    if not icon:
+        return []
+    return re.search('\((\d+)\)', icon.attrs['onclick']).group(1)
 
 def get_internal_id(page: BeautifulSoup) -> str:
     link = page.select_one('link[rel="shortlink"]').attrs['href']
@@ -63,7 +72,7 @@ def fix_formulas(ws):
         [f'=IF(K{i}, DAYS360(K{i}, TODAY()), "--")']
         for i in range(3, rows)
     ]
-    ws.update_cells('AB3:AB', values)
+    ws.update_cells('AC3:AC', values)
 
 def get_scores(dog: Dict[str, Any]) -> str:
     def _():
@@ -100,7 +109,7 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[15] = get_phone(person)
     old_row[22] = dog['Status']
     old_row[23] = get_fee(dog)
-    old_row[31] = get_scores(dog)
+    old_row[24] = get_scores(dog)
     old_row[32] = get_attributes(dog)
     old_row[33] = dog_internal_id
     old_row[34] = person_internal_id
@@ -237,10 +246,37 @@ class Foster(object):
             )
         fix_formulas(ws)
 
+    def get_litter_ids(self, apa_id: str) -> Iterator[str]:
+        r = self.session.get(f'https://www.shelterluv.com/APA-A-{apa_id}')
+        r.raise_for_status()
+        page = BeautifulSoup(r.text, 'html5lib')
+        litter_id = get_litter_id(page)
+        if not litter_id:
+            raise NotLitterFound(apa_id)
+        r = self.session.post(
+            'https://www.shelterluv.com/custom_intake_show_littermates',
+            data={'member': litter_id})
+        r.raise_for_status()
+        page = BeautifulSoup(r.text, 'html5lib')
+        rows = page.select('#table_id_lit tbody tr')
+        for row in rows:
+            yield apa_number_normalize(row.select('td')[5].text)
+
+    def _add_litter(self, apa_id: str) -> None:
+        ids = self.get_litter_ids(apa_id)
+        for a_id in ids:
+            print(f'--- Processing dog {a_id} of litter {apa_id}')
+            self._append_dog(a_id)
+
     def append_dog(self, apa_ids: str) -> None:
         for apa_id in process_ids(apa_ids):
             print(f'-- Processing dog {apa_id}')
             self._append_dog(apa_id)
+
+    def add_litter(self, apa_ids: str) -> None:
+        for apa_id in process_ids(apa_ids):
+            print(f'-- Processing for litter {apa_id}')
+            self._add_litter(apa_id)
 
 
 def get_service_file(b64_string: str) -> None:
