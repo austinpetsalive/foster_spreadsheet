@@ -301,6 +301,9 @@ def handle(req: str):
     r = json.loads(req)
     if r.get('refresh'):
         f.refresh_all()
-    else:
+    elif r.get('apa_id'):
         dog = r['apa_id']
         f.append_dog(dog)
+    else:
+        litter = r['litter_id']
+        f.add_litter(litter)
