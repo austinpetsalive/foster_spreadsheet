@@ -11,3 +11,6 @@ functions:
         write_debug: true
     environment_file:
         - foster_secrets.yml
+    labels:
+        com.openfaas.scale.min: "2"
+        com.openfaas.scale.max: "5"
