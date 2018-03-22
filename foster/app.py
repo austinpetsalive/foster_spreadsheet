@@ -190,7 +190,7 @@ class Foster(object):
     def refresh_all(self):
         ws = self.sheet.worksheet_by_title('Tracking')
         all_values = ws.get_all_values()
-        new_values = []
+        to_update = {}
         for row in all_values[2:]:
             apa_id = row[1]
             if not apa_id:
@@ -203,8 +203,23 @@ class Foster(object):
                 dog_internal_id, person_internal_id = self.get_internal_ids(apa_id)
             dog = self.dog_info(dog_internal_id)
             person = self.person_info(person_internal_id)
-            new_values.append(
-                new_row(row, dog, person, apa_id, dog_internal_id, person_internal_id))
+            to_update[apa_id] = (row, dog, person, dog_internal_id, person_internal_id)
+
+        current_values = ws.get_all_values()
+        new_values = []
+        for row in current_values[2:]:
+            apa_id = row[1]
+            if not apa_id:
+                break
+            updated_row = to_update.get(apa_id)
+            if updated_row:
+                _, dog, person, dog_internal_id, person_internal_id = updated_row
+                new_values.append(
+                    new_row(row, dog, person, apa_id, dog_internal_id, person_internal_id)
+                )
+            else:
+                new_values.append(row)
+
         print('Updating spreadsheet')
         ws.update_cells('A3', values=new_values)
         fix_formulas(ws)
