@@ -14,6 +14,7 @@ pygsheets = "*"
 phonenumbers = "*"
 "beautifulsoup4" = "*"
 pytz = "*"
+ipdb = "*"
 
 
 [dev-packages]
