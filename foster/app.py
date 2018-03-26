@@ -52,7 +52,10 @@ def get_dob(dog: Dict[str, Any]) -> str:
     return datetime.datetime.fromtimestamp(dog['DOBUnixTime']).strftime('%m/%d/%Y') 
 
 def get_fee(dog: Dict[str, Any]) -> str:
-    return dog['AdoptionFeeGroup']['Price']
+    try:
+        return dog['AdoptionFeeGroup']['Price']
+    except KeyError:
+        return ''
 
 def get_phone(person: Dict[str, Any]) -> str:
     try:
