@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "7d7d2b46f8dcd3314554cf390839236a92f4129eea7562ba1d4bab43debd1f4c"
+            "sha256": "f31785cabb963fc9bc090ef9c9ba846319478a1c357dfe203394acf53404f9f6"
         },
         "host-environment-markers": {
             "implementation_name": "cpython",
@@ -34,6 +34,12 @@
             ],
             "markers": "sys_platform == 'darwin'",
             "version": "==0.1.0"
+        },
+        "arrow": {
+            "hashes": [
+                "sha256:a558d3b7b6ce7ffc74206a86c147052de23d3d4ef0e17c210dd478c53575c4cd"
+            ],
+            "version": "==0.12.1"
         },
         "beautifulsoup4": {
             "hashes": [
@@ -97,6 +103,12 @@
                 "sha256:5c0138b53a2f13b1dc29707b75c04236e35247d6b5f2a14c930966e8f45ce3cc"
             ],
             "version": "==0.11.0"
+        },
+        "humanize": {
+            "hashes": [
+                "sha256:a43f57115831ac7c70de098e6ac46ac13be00d69abbf60bdcac251344785bb19"
+            ],
+            "version": "==0.5.1"
         },
         "idna": {
             "hashes": [
@@ -286,7 +298,6 @@
                 "sha256:e8c43b5eee76b2083a9badde89fd1bbce6c8942d1045146e100b7b5e014f4f1a",
                 "sha256:e64193f0047ad603b71f202332ab5527c5e52aa7c8b609704fc28c0dc20c4365"
             ],
-            "markers": "os_name != 'nt'",
             "version": "==0.5.2"
         },
         "pyasn1": {
@@ -332,11 +343,11 @@
         },
         "pygsheets": {
             "hashes": [
-                "sha256:c8a57c3683a930141d894258e15feb077badc7438b0d389579eeb700b9177580",
-                "sha256:83b836bcc514b5529deb2927f9ff5dc4dd0dd3dac73a0cc6c1e075b50217be6e",
-                "sha256:d67e4aa80cdf58a764db971e06ad5c74a0a569f9a0f5107a8e3a0e9f6368c282"
+                "sha256:5216181fa5de444668a893849015057abd6875c22f9dc0ce262c7878a8bc0e0e",
+                "sha256:dbd253469ceba27594c0545039c85fd9d385592338acf14d09a9cf2d135a4d1c",
+                "sha256:78597058f9f9076bf598b7b02563de601bcd25ebe9051a7712b7d93274ac7a26"
             ],
-            "version": "==1.1.4"
+            "version": "==1.1.3"
         },
         "python-dateutil": {
             "hashes": [

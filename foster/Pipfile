@@ -10,11 +10,13 @@ name = "pypi"
 jupyter = "*"
 requests = "*"
 mypy = "*"
-pygsheets = "*"
+pygsheets = "==1.1.3"
 phonenumbers = "*"
 "beautifulsoup4" = "*"
 pytz = "*"
 ipdb = "*"
+humanize = "*"
+arrow = "*"
 
 
 [dev-packages]
