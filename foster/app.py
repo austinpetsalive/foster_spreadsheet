@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 import pygsheets
 import phonenumbers
 import pytz
-
+import dateutil
 import shelterluv
 
 NUMBER_OF_COLUMNS = 35
@@ -49,7 +49,43 @@ def get_bc_mc(dog: Dict[str, Any]) -> str:
     return '/'.join(_())
 
 def get_dob(dog: Dict[str, Any]) -> str:
-    return datetime.datetime.fromtimestamp(dog['DOBUnixTime']).strftime('%m/%d/%Y') 
+    dob = datetime.datetime.fromtimestamp(dog['DOBUnixTime'])
+    #cst = pytz.timezone('US/Central')
+    #timestamp = datetime.datetime.now(cst).strftime('%m/%d/%Y %I:%M %p')
+    now = datetime.datetime.now()
+    diff = dateutil.relativedelta.relativedelta(now, dob)
+    days = now - dob
+    if diff.years:
+        return ', '.join(filter(None, [
+            format_display(diff.years, 'year'),
+            format_display(diff.months, 'month')
+        ]))
+    elif diff.months and diff.months >= 4:
+        return ', '.join(filter(None, [
+            format_display(diff.months, 'month'),
+            format_display(diff.days, 'day')
+        ]))
+    elif days.days >= 7:
+        weeks = int(days.days/7)
+        return ', '.join(filter(None, [
+            format_display(weeks, 'week'),
+            format_display(days.days - weeks*7, 'day')
+        ]))
+    else:
+        return format_display(days.days, 'day')
+
+def get_weeks(dog: Dict[str, Any]) -> str:
+    dob = datetime.datetime.fromtimestamp(dog['DOBUnixTime'])
+    now = datetime.datetime.now()
+    weeks = ((now - dob).days)/7
+    return f'{weeks:.2f}'
+
+def format_display(num: int, unit: str):
+    if num == 0:
+        return ''
+    if num == 1:
+        return f'1 {unit}'
+    return f'{num} {unit}s'
 
 def get_fee(dog: Dict[str, Any]) -> str:
     try:
@@ -66,11 +102,6 @@ def get_phone(person: Dict[str, Any]) -> str:
 
 def fix_formulas(ws):
     rows = ws.jsonSheet['properties']['gridProperties']['rowCount']
-    values = [
-        [f'=IF(trim(E{i})="","--",(TODAY()-E{i})/7)']
-        for i in range(3, rows)
-    ]
-    ws.update_cells('F3:F', values)
     values = [
         [f'=IF(K{i}, DAYS360(K{i}, TODAY()), "--")']
         for i in range(3, rows)
@@ -105,6 +136,7 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[2] = get_bc_mc(dog)
     old_row[3] = dog['Breed']
     old_row[4] = get_dob(dog)
+    old_row[5] = get_weeks(dog)
     old_row[6] = dog['Sex']
     old_row[7] = dog['Altered']
     old_row[12] = ' '.join([person['Firstname'], person['Lastname']])
