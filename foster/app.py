@@ -106,7 +106,7 @@ def fix_formulas(ws):
         [f'=IF(K{i}, DAYS360(K{i}, TODAY()), "--")']
         for i in range(3, rows)
     ]
-    ws.update_cells('AC3:AC', values)
+    ws.update_cells('AD3:AD', values)
 
 def get_scores(dog: Dict[str, Any]) -> str:
     def _():
@@ -145,7 +145,7 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[22] = dog['Status']
     old_row[23] = get_fee(dog)
     old_row[24] = get_scores(dog)
-    old_row[32] = get_attributes(dog)
+    old_row[25] = get_attributes(dog)
     old_row[33] = dog_internal_id
     old_row[34] = person_internal_id
     return old_row
