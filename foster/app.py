@@ -313,7 +313,7 @@ class Foster(object):
             yield apa_number_normalize(row.select('td')[5].text)
 
     def _add_litter(self, apa_id: str) -> None:
-        ids = self.get_litter_ids(apa_id)
+        ids = sorted(self.get_litter_ids(apa_id), key=lambda x: int(x))
         for a_id in ids:
             print(f'--- Processing dog {a_id} of litter {apa_id}')
             self._append_dog(a_id)
