@@ -20,7 +20,7 @@ NUMBER_OF_COLUMNS = 35
 class ExistingDogException(Exception):
     pass
 
-class NotLitterFound(Exception):
+class LitterNotFound(Exception):
     pass
 
 def get_litter_id(page: BeautifulSoup) -> str:
@@ -302,7 +302,7 @@ class Foster(object):
         page = BeautifulSoup(r.text, 'html5lib')
         litter_id = get_litter_id(page)
         if not litter_id:
-            raise NotLitterFound(apa_id)
+            raise LitterNotFound(apa_id)
         r = self.session.post(
             'https://www.shelterluv.com/custom_intake_show_littermates',
             data={'member': litter_id})
@@ -313,10 +313,31 @@ class Foster(object):
             yield apa_number_normalize(row.select('td')[5].text)
 
     def _add_litter(self, apa_id: str) -> None:
-        ids = sorted(self.get_litter_ids(apa_id), key=lambda x: int(x))
-        for a_id in ids:
-            print(f'--- Processing dog {a_id} of litter {apa_id}')
-            self._append_dog(a_id)
+        try:
+            ws = self.sheet.worksheet_by_title('Tracking')
+            ids = ws.get_col(2)
+            ids = sorted(self.get_litter_ids(apa_id), key=lambda x: int(x))
+            for a_id in ids:
+                print(f'--- Processing dog {a_id} of litter {apa_id}')
+                self._append_dog(a_id)
+        except LitterNotFound:
+            traceback.print_exc()
+            ws.insert_rows(
+                len(ids),
+                values=[[
+                    f'Litter containing {apa_id} not found',
+                    apa_id
+                ]]
+            )
+        except Exception as exc:
+            traceback.print_exc()
+            ws.insert_rows(
+                len(ids),
+                values=[[
+                    f'Error processing litter {apa_id}',
+                    apa_id
+                ]]
+            )
 
     def append_dog(self, apa_ids: str) -> None:
         for apa_id in process_ids(apa_ids):
