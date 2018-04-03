@@ -17,6 +17,7 @@ pytz = "*"
 ipdb = "*"
 humanize = "*"
 arrow = "*"
+pandas = "*"
 
 
 [dev-packages]
