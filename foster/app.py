@@ -15,7 +15,7 @@ import pytz
 import dateutil.relativedelta
 import shelterluv
 
-NUMBER_OF_COLUMNS = 34
+NUMBER_OF_COLUMNS = 33
 
 
 class ExistingDogException(Exception):
@@ -107,7 +107,7 @@ def fix_formulas(ws):
         [f'=IF(K{i}, DAYS360(K{i}, TODAY()), "--")']
         for i in range(3, rows)
     ]
-    ws.update_cells('AC3:AC', values)
+    ws.update_cells('AB3:AB', values)
 
 def get_scores(dog: Dict[str, Any]) -> str:
     def _():
@@ -142,13 +142,13 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[7] = dog['Altered']
     old_row[12] = ' '.join([person['Firstname'], person['Lastname']])
     old_row[13] = person['Email']
-    old_row[15] = get_phone(person)
-    old_row[21] = dog['Status']
-    old_row[22] = get_fee(dog)
-    old_row[23] = get_scores(dog)
-    old_row[24] = get_attributes(dog)
-    old_row[32] = dog_internal_id
-    old_row[33] = person_internal_id
+    old_row[14] = get_phone(person)
+    old_row[20] = dog['Status']
+    old_row[21] = get_fee(dog)
+    old_row[22] = get_scores(dog)
+    old_row[23] = get_attributes(dog)
+    old_row[31] = dog_internal_id
+    old_row[32] = person_internal_id
     return old_row
 
 def apa_number_normalize(num: str) -> str:
