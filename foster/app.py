@@ -15,7 +15,7 @@ import pytz
 import dateutil.relativedelta
 import shelterluv
 
-NUMBER_OF_COLUMNS = 33
+NUMBER_OF_COLUMNS = 34
 
 
 class ExistingDogException(Exception):
@@ -50,6 +50,10 @@ def get_bc_mc(dog: Dict[str, Any]) -> str:
     return '/'.join(_())
 
 def get_dob(dog: Dict[str, Any]) -> str:
+    dob = datetime.datetime.fromtimestamp(dog['DOBUnixTime'])
+    return dob.strftime('%m/%d/%Y')
+
+def get_age(dog: Dict[str, Any]) -> str:
     dob = datetime.datetime.fromtimestamp(dog['DOBUnixTime'])
     #cst = pytz.timezone('US/Central')
     #timestamp = datetime.datetime.now(cst).strftime('%m/%d/%Y %I:%M %p')
@@ -104,10 +108,10 @@ def get_phone(person: Dict[str, Any]) -> str:
 def fix_formulas(ws):
     rows = ws.jsonSheet['properties']['gridProperties']['rowCount']
     values = [
-        [f'=IF(K{i}, DAYS360(K{i}, TODAY()), "--")']
+        [f'=IF(L{i}, DAYS360(L{i}, TODAY()), "--")']
         for i in range(3, rows)
     ]
-    ws.update_cells('AB3:AB', values)
+    ws.update_cells('AC3:AC', values)
 
 def get_scores(dog: Dict[str, Any]) -> str:
     def _():
@@ -137,18 +141,19 @@ def new_row(old_row: List, dog: Dict[str, Any], person: Dict[str, Any],
     old_row[2] = get_bc_mc(dog)
     old_row[3] = dog['Breed']
     old_row[4] = get_dob(dog)
-    old_row[5] = get_weeks(dog)
-    old_row[6] = dog['Sex']
-    old_row[7] = dog['Altered']
-    old_row[12] = ' '.join([person['Firstname'], person['Lastname']])
-    old_row[13] = person['Email']
-    old_row[14] = get_phone(person)
-    old_row[20] = dog['Status']
-    old_row[21] = get_fee(dog)
-    old_row[22] = get_scores(dog)
-    old_row[23] = get_attributes(dog)
-    old_row[31] = dog_internal_id
-    old_row[32] = person_internal_id
+    old_row[5] = get_age(dog)
+    old_row[6] = get_weeks(dog)
+    old_row[7] = dog['Sex']
+    old_row[8] = dog['Altered']
+    old_row[13] = ' '.join([person['Firstname'], person['Lastname']])
+    old_row[14] = person['Email']
+    old_row[15] = get_phone(person)
+    old_row[21] = dog['Status']
+    old_row[22] = get_fee(dog)
+    old_row[23] = get_scores(dog)
+    old_row[24] = get_attributes(dog)
+    old_row[32] = dog_internal_id
+    old_row[33] = person_internal_id
     return old_row
 
 def apa_number_normalize(num: str) -> str:
