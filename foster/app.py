@@ -228,6 +228,12 @@ class Foster(object):
             }
         return shelterluv.get_people(self.api_key, internal_id)
 
+    def log(self, level: str, message: str) -> None:
+        logging_ws = self.sheet.worksheet_by_title('Logging')
+        cst = pytz.timezone('US/Central')
+        timestamp = datetime.datetime.now(cst).strftime('%m/%d/%Y %I:%M:%S %p')
+        logging_ws.append_table(values=[timestamp, level, message])
+
     def refresh_all(self):
         ws = self.sheet.worksheet_by_title('Tracking')
         all_values = ws.get_all_values()
@@ -241,10 +247,33 @@ class Foster(object):
             person_internal_id = row[-1]
             if not (dog_internal_id and person_internal_id):
                 print('.. missing some ids, will get them')
-                dog_internal_id, person_internal_id = self.get_internal_ids(apa_id)
-            dog = self.dog_info(dog_internal_id)
-            person = self.person_info(person_internal_id)
+                try:
+                    dog_internal_id, person_internal_id = self.get_internal_ids(apa_id)
+                except requests.exceptions.HTTPError as err:
+                    self.log(
+                        'ERROR',
+                        f'Failed to get internal ids for dog {apa_id}\n'
+                        f'Exception code: {err.response.status_code} ({err.args[0]})'
+                    )
+                    continue
+                except Exception as exc:
+                    self.log(
+                        'ERROR',
+                        f'General exception: {exc}'
+                    )
+                    continue
+            try:
+                dog = self.dog_info(dog_internal_id)
+                person = self.person_info(person_internal_id)
+            except Exception as exc:
+                self.log(
+                    'ERROR',
+                    f'Failed to get data from API for {apa_id}\n'
+                    f'Generic exception: {exc}'
+                )
+                continue
             to_update[apa_id] = (row, dog, person, dog_internal_id, person_internal_id)
+
 
         current_values = ws.get_all_values()
         new_values = []
