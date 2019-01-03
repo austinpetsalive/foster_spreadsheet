@@ -29,11 +29,11 @@ credentials = storage.get()
 if credentials is None:
     # Run through the OAuth flow and retrieve credentials
 	flow = OAuth2WebServerFlow(config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI)
-    authorize_url = flow.step1_get_authorize_url()
-    print ('Go to the following link in your browser: ' + authorize_url)
-    code = input('Enter verification code: ').strip()
-    credentials = flow.step2_exchange(code)
-    storage.put(credentials)
+	authorize_url = flow.step1_get_authorize_url()
+	print ('Go to the following link in your browser: ' + authorize_url)
+	code = input('Enter verification code: ').strip()
+	credentials = flow.step2_exchange(code)
+	storage.put(credentials)
 
 # Create an httplib2.Http object and authorize it with our credentials
 http = httplib2.Http()
