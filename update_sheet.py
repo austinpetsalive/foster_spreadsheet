@@ -27,7 +27,7 @@ storage = Storage(CREDS_FILE)
 credentials = storage.get()
 
 if credentials is None:
-    # Run through the OAuth flow and retrieve credentials
+	# Run through the OAuth flow and retrieve credentials
 	flow = OAuth2WebServerFlow(config.GOOGLE_CLIENT_ID, config.GOOGLE_CLIENT_SECRET, OAUTH_SCOPE, REDIRECT_URI)
 	authorize_url = flow.step1_get_authorize_url()
 	print ('Go to the following link in your browser: ' + authorize_url)
@@ -119,7 +119,7 @@ while count <= end and blank <30:
 			range_name2 = tab+'O'+str(count)+':Q'+str(count)
 			
 
-			if (personinternalid >0):
+			if ((personinternalid >0) and "Foster" in animal['AnimalStatus'] :
 				person=""
 				queryperson = "select PersonEmail, PersonPhone from People where `PersonInternal-ID`="+str(personinternalid)
 				result = cursor.execute(queryperson)			
@@ -259,8 +259,6 @@ print('{0} cells updated.'.format(result.get('updatedCells')));
 	
 #Close the DB connection			
 functions.db_close(cnxn, cursor)
-now = functions.now
-current_timestamp = functions.current_timestamp
 print("success: "+current_timestamp)
 
 
