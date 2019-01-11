@@ -70,7 +70,7 @@ while count <= end and blank <30:
 			animal=(dict(zip(columns, row)))
 			internalid=animal['AnimalInternal-ID']
 			print(internalid)
-			time.sleep(2)	
+			time.sleep(1)	
 			dob = datetime.datetime.fromtimestamp(animal['AnimalDOBUnixTime'])
 			print(dob)
 			now = datetime.datetime.now()
