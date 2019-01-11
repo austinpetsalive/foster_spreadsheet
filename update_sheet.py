@@ -259,6 +259,8 @@ print('{0} cells updated.'.format(result.get('updatedCells')));
 	
 #Close the DB connection			
 functions.db_close(cnxn, cursor)
+now = datetime.datetime.now()
+current_timestamp = (now.strftime('%Y-%m-%d %H:%M:%S'))
 print("success: "+current_timestamp)
 
 
