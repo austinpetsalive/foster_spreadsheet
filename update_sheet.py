@@ -48,6 +48,7 @@ start = 3
 end = 500
 count = start
 blank =0
+prev_animalid=""
 while count <= end and blank <30:
 	range_name=tab+'B'+str(count)+':B'+str(count)
 	result = service.spreadsheets().values().get(
@@ -57,11 +58,15 @@ while count <= end and blank <30:
 	try:
 		animalid=id[0][0]
 		blank=0
+		if prev_animalid==animalid:
+			print("user has changed rows too much to continue processing")
+			exit()
 	except:
 		animalid=""
 		blank+=1
 	print(animalid)
 	print (count, animalid)
+
 	query = "select * from Animals where AnimalID='"+animalid+"'"
 	result = cursor.execute(query)
 	columns = [column[0] for column in cursor.description]
@@ -237,6 +242,7 @@ while count <= end and blank <30:
 	else:
 		print("animalid not found",animalid)			
 	count+=1	
+	prev_animalid=animalid
 
 		
 now = datetime.datetime.now()
