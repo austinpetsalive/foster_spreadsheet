@@ -75,7 +75,6 @@ while count <= end and blank <30:
 			animal=(dict(zip(columns, row)))
 			internalid=animal['AnimalInternal-ID']
 			print(internalid)
-			time.sleep(1)	
 			dob = datetime.datetime.fromtimestamp(animal['AnimalDOBUnixTime'])
 			print(dob)
 			now = datetime.datetime.now()
@@ -227,7 +226,7 @@ while count <= end and blank <30:
 				'valueInputOption': value_input_option,
 				'data': data
 			}
-
+			time.sleep(1)	
 			result = service.spreadsheets().values().get(
 				spreadsheetId=config.spreadsheet_id, range=range_name).execute()	
 			id = result.get('values')
