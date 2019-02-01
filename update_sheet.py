@@ -15,9 +15,10 @@ from apiclient import errors
 from pathlib import Path
 import requests
 import db_functions
+import sl_config
 
 #Connect to the DB
-cnxn, cursor =db_functions.open(config.dbhost,config.dbuser,config.dbpassword,config.database,config.ssl_ca,config.ssl_cert,config.ssl_key)
+cnxn, cursor =db_functions.open(sl_config.dbhost,sl_config.dbuser,sl_config.dbpassword,sl_config.database,sl_config.ssl_ca,sl_config.ssl_cert,sl_config.ssl_key)
 
 OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
