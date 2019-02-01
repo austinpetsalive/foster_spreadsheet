@@ -14,10 +14,10 @@ from oauth2client.client import OAuth2WebServerFlow
 from apiclient import errors
 from pathlib import Path
 import requests
-import functions
+import db_functions
 
 #Connect to the DB
-cnxn, cursor =functions.db_open()
+cnxn, cursor =db_functions.open(config.dbhost,config.dbuser,config.dbpassword,config.database,config.ssl_ca,config.ssl_cert,config.ssl_key)
 
 OAUTH_SCOPE = 'https://www.googleapis.com/auth/drive'
 REDIRECT_URI = 'urn:ietf:wg:oauth:2.0:oob'
@@ -263,7 +263,7 @@ valueInputOption=value_input_option, body=body).execute()
 print('{0} cells updated.'.format(result.get('updatedCells')));
 	
 #Close the DB connection			
-functions.db_close(cnxn, cursor)
+db_functions.close(cnxn, cursor)
 now = datetime.datetime.now()
 current_timestamp = (now.strftime('%Y-%m-%d %H:%M:%S'))
 print("success: "+current_timestamp)
