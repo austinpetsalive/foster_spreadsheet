@@ -124,7 +124,7 @@ while count <= end and blank <30:
 			range_name2 = tab+'O'+str(count)+':Q'+str(count)
 			
 
-			if ((personinternalid >0) and ("Foster" in animal['AnimalStatus'] or "Pre-Adopt" in animal['AnimalStatus'] or  animal['AnimalStatus'] == 'Healthy In Home'):
+			if ((personinternalid >0) and ("Foster" in animal['AnimalStatus'] or "Pre-Adopt" in animal['AnimalStatus'] or  animal['AnimalStatus'] == 'Healthy In Home')):
 				person=""
 				queryperson = "select PersonEmail, PersonPhone from People where `PersonInternal-ID`="+str(personinternalid)
 				result = cursor.execute(queryperson)			
