@@ -50,7 +50,7 @@ end = 500
 count = start
 blank =0
 prev_animalid=""
-while count <= end and blank <30:
+while count <= end and blank <13:
 	range_name=tab+'B'+str(count)+':B'+str(count)
 	result = service.spreadsheets().values().get(
 		spreadsheetId=config.spreadsheet_id, range=range_name).execute()
