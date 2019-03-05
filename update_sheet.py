@@ -97,11 +97,11 @@ while count <= end and blank <13:
 			query = "select * from AnimalsAttributes where `AnimalInternal-ID` = '"+str(internalid)+"'"
 			result = cursor.execute(query)
 			for attribute in cursor.fetchall():
-				if attribute[2]=='Behavior Consult':
+				if 'Behavior Consult' in attribute[2]:
 					if len(atts)>1:
 						atts =atts+"/"
 					atts=atts+"BC"
-				elif attribute[2]=='Medical Consult':
+				elif 'Medical Consult' in attribute[2]:
 					if len(atts)>1:
 						atts =atts+"/"
 					atts=atts+"MC"
