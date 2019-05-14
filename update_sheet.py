@@ -116,7 +116,7 @@ while count <= end and blank <13:
 			]
 			print (values1)
 			personinternalid=0
-			queryevent = "SELECT `PersonInternal-ID` FROM `Events` where EventType='Outcome.Foster' and `AnimalInternal-ID`="+str(internalid)+" ORDER BY EventTime DESC limit 1"
+			queryevent = "SELECT `PersonInternal-ID` FROM `Events` where EventType='Outcome.Foster' and `AnimalInternal-ID`="+str(internalid)+" ORDER BY EventTime DESC, DateUpdated DESC limit 1"
 			result = cursor.execute(queryevent)			
 			lastfoster=cursor.fetchone()
 			if lastfoster is not None:
